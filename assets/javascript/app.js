@@ -1,3 +1,5 @@
+/*******************VARIABLES AND FUNCTION DEFINITIONS**************/
+
 var mealID = "";
 var recipe;
 var protein = 0;
@@ -45,14 +47,18 @@ var printNutrients = function(nutrients, macro, id, unit) {
   }
 };
 
+//Function to generate Pie chart
 var makeChart = function() {
+  //creates new canvas to render chart
   var newCanvas = $("<canvas>").attr({
     id: "macroChart",
     height: "400px",
     width: "400px"
   });
 
+  //appends new canvas into the html document
   $("#chart-container").append(newCanvas);
+  //renders chart on canvas
   var ctx = document.getElementById("macroChart").getContext("2d");
   var chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -74,6 +80,9 @@ var makeChart = function() {
   });
 };
 
+/*********************ON CLICK EVENTS*************************/
+
+//on clicking search button for ingredient field, creates query url and calls API
 $("#search-btn-ingredient").on("click", function() {
   var ingredientKeyword =
     "i=" +
@@ -86,8 +95,11 @@ $("#search-btn-ingredient").on("click", function() {
     url: queryURL,
     method: "GET"
   }).then(function(response) {
+    //pulls a random recipe from the response array and gets its id
     var randomRecipe = Math.floor(Math.random() * response.meals.length);
     mealID = response.meals[randomRecipe].idMeal;
+
+    //calls API again to search by ID for individual recipe information
     var idURL =
       "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealID;
     $.ajax({
@@ -97,10 +109,12 @@ $("#search-btn-ingredient").on("click", function() {
       // Printing the entire object to console
       console.log(response);
 
+      //pulls title, directions, and image url from response and sets to variables
       var title = response.meals[0].strMeal;
       var directions = response.meals[0].strInstructions;
       var imageURL = response.meals[0].strMealThumb;
 
+      //pulls measure and ingredient information from response, puts them back together in the right order, then stores in an array
       var measuresArray = [
         response.meals[0].strMeasure1 + " " + response.meals[0].strIngredient1,
         response.meals[0].strMeasure2 + " " + response.meals[0].strIngredient2,
@@ -148,13 +162,18 @@ $("#search-btn-ingredient").on("click", function() {
       console.log(directions);
       console.log(measuresArray);
       emptyInfo();
-
+      //loops through measuresArray, checks if the ingredient line exists, then appends it to ingredients list in the document
       for (i = 0; i < measuresArray.length; i++) {
-        if (measuresArray[i] !== " " && measuresArray[i] !== "null null") {
+        if (
+          measuresArray[i] !== " " &&
+          measuresArray[i] !== "null null" &&
+          measuresArray[i] !== "  "
+        ) {
           $("#ingredients-list").append($("<li>" + measuresArray[i] + "</li>"));
         }
       }
 
+      //creates proper recipe format for the Edamam API from the mealDB response info
       recipe = {
         title: title,
         prep: "",
@@ -182,7 +201,7 @@ $("#search-btn-ingredient").on("click", function() {
       }
       var app_id = "5e802351";
       var app_key = "13bf29d458997ee7632f5d5a606996a3";
-      // Make the actual CORS request.
+      // Makes the CORS request to the Edamam API
       function makeCorsRequest() {
         var url =
           "https://api.edamam.com/api/nutrition-details?app_id=" +
@@ -199,7 +218,9 @@ $("#search-btn-ingredient").on("click", function() {
           console.log(JSON.parse(xhr.responseText));
           var response = JSON.parse(xhr.responseText);
           console.log(response.totalNutrients);
+          //checks if nutrition data is returned
           if (response.totalNutrients !== undefined) {
+            //writes nutrition data to page and updates variables for protein/fat/carbs macros
             protein = printNutrients(
               response.totalNutrients,
               "PROCNT",
@@ -219,8 +240,11 @@ $("#search-btn-ingredient").on("click", function() {
             printNutrients(response.totalNutrients, "NA", "sodium", " mg");
             printNutrients(response.totalNutrients, "FIBTG", "fiber", " g");
             printNutrients(response.totalNutrients, "SUGAR", "sugar", " g");
+
+            //renders pie chart
             makeChart();
           } else {
+            //wites "not available" on page in place of nutrition details
             infoNotAvailable();
           }
         };
@@ -234,9 +258,7 @@ $("#search-btn-ingredient").on("click", function() {
       }
 
       makeCorsRequest();
-
-      // Empty the contents of the artist-div, append the new artist content
-
+      //Writes recipe title, directions, and image to the page
       $("#title").text(title);
       $("#directions").text(directions);
       $("#recipe-image").css({
@@ -249,6 +271,7 @@ $("#search-btn-ingredient").on("click", function() {
   });
 });
 
+//on clicking search button for category field, creates query url and calls API
 $("#search-btn-category").on("click", function() {
   var category = "c=" + $("#category-input").val();
   var queryURL =
@@ -257,10 +280,13 @@ $("#search-btn-category").on("click", function() {
     url: queryURL,
     method: "GET"
   }).then(function(response) {
+    //pulls a random recipe from the response array and gets its id
     var randomRecipe = Math.floor(Math.random() * response.meals.length);
     mealID = response.meals[randomRecipe].idMeal;
     var idURL =
       "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealID;
+
+    //calls API again to search by ID for individual recipe information
     $.ajax({
       url: idURL,
       method: "GET"
@@ -268,11 +294,12 @@ $("#search-btn-category").on("click", function() {
       // Printing the entire object to console
       console.log(response);
 
-      // Constructing HTML containing the artist information
+      //pulls title, directions, and image url from response and sets to variables
       var title = response.meals[0].strMeal;
       var directions = response.meals[0].strInstructions;
       var imageURL = response.meals[0].strMealThumb;
 
+      //pulls measure and ingredient information from response, puts them back together in the right order, then stores in an array
       var measuresArray = [
         response.meals[0].strMeasure1 + " " + response.meals[0].strIngredient1,
         response.meals[0].strMeasure2 + " " + response.meals[0].strIngredient2,
@@ -321,12 +348,18 @@ $("#search-btn-category").on("click", function() {
       console.log(measuresArray);
       emptyInfo();
 
+      //loops through measuresArray, checks if the ingredient line exists, then appends it to ingredients list in the document
       for (i = 0; i < measuresArray.length; i++) {
-        if (measuresArray[i] !== " " && measuresArray[i] !== "null null") {
+        if (
+          measuresArray[i] !== " " &&
+          measuresArray[i] !== "null null" &&
+          measuresArray[i] !== "  "
+        ) {
           $("#ingredients-list").append($("<li>" + measuresArray[i] + "</li>"));
         }
       }
 
+      //creates proper recipe format for the Edamam API from the mealDB response info
       recipe = {
         title: title,
         prep: "",
@@ -354,7 +387,7 @@ $("#search-btn-category").on("click", function() {
       }
       var app_id = "5e802351";
       var app_key = "13bf29d458997ee7632f5d5a606996a3";
-      // Make the actual CORS request.
+      // Make the CORS request to the Edamam API
       function makeCorsRequest() {
         var url =
           "https://api.edamam.com/api/nutrition-details?app_id=" +
@@ -371,7 +404,9 @@ $("#search-btn-category").on("click", function() {
           console.log(JSON.parse(xhr.responseText));
           var response = JSON.parse(xhr.responseText);
 
+          //checks if nutrition data is returned
           if (response.totalNutrients !== undefined) {
+            //writes nutrition data to page and updates variables for protein/fat/carbs macros
             protein = printNutrients(
               response.totalNutrients,
               "PROCNT",
@@ -391,8 +426,11 @@ $("#search-btn-category").on("click", function() {
             printNutrients(response.totalNutrients, "NA", "sodium", " mg");
             printNutrients(response.totalNutrients, "FIBTG", "fiber", " g");
             printNutrients(response.totalNutrients, "SUGAR", "sugar", " g");
+
+            //renders pie chart
             makeChart();
           } else {
+            //wites "not available" on page in place of nutrition details
             infoNotAvailable();
           }
         };
@@ -407,7 +445,7 @@ $("#search-btn-category").on("click", function() {
 
       makeCorsRequest();
 
-      // Empty the contents of the artist-div, append the new artist content
+      //Writes recipe title, directions, and image to the page
 
       $("#title").text(title);
       $("#directions").text(directions);
@@ -431,11 +469,12 @@ $("#random-btn").on("click", function() {
     // Printing the entire object to console
     console.log(response);
 
-    // Constructing HTML containing the artist information
+    //pulls title, directions, and image url from response and sets to variables
     var title = response.meals[0].strMeal;
     var directions = response.meals[0].strInstructions;
     var imageURL = response.meals[0].strMealThumb;
 
+    //pulls measure and ingredient information from response, puts them back together in the right order, then stores in an array
     var measuresArray = [
       response.meals[0].strMeasure1 + " " + response.meals[0].strIngredient1,
       response.meals[0].strMeasure2 + " " + response.meals[0].strIngredient2,
@@ -464,12 +503,18 @@ $("#random-btn").on("click", function() {
     console.log(measuresArray);
     emptyInfo();
 
+    //loops through measuresArray, checks if the ingredient line exists, then appends it to ingredients list in the document
     for (i = 0; i < measuresArray.length; i++) {
-      if (measuresArray[i] !== " " && measuresArray[i] !== "null null") {
+      if (
+        measuresArray[i] !== " " &&
+        measuresArray[i] !== "null null" &&
+        measuresArray[i] !== "  "
+      ) {
         $("#ingredients-list").append($("<li>" + measuresArray[i] + "</li>"));
       }
     }
 
+    //creates proper recipe format for the Edamam API from the mealDB response info
     recipe = {
       title: title,
       prep: "",
@@ -497,7 +542,7 @@ $("#random-btn").on("click", function() {
     }
     var app_id = "5e802351";
     var app_key = "13bf29d458997ee7632f5d5a606996a3";
-    // Make the actual CORS request.
+    // Makes the CORS request to the Edamam API
     function makeCorsRequest() {
       var url =
         "https://api.edamam.com/api/nutrition-details?app_id=" +
@@ -514,7 +559,9 @@ $("#random-btn").on("click", function() {
         console.log(JSON.parse(xhr.responseText));
         var response = JSON.parse(xhr.responseText);
 
+        //checks if nutrition data is returned
         if (response.totalNutrients !== undefined) {
+          //writes nutrition data to page and updates variables for protein/fat/carbs macros
           protein = printNutrients(
             response.totalNutrients,
             "PROCNT",
@@ -534,8 +581,10 @@ $("#random-btn").on("click", function() {
           printNutrients(response.totalNutrients, "NA", "sodium", " mg");
           printNutrients(response.totalNutrients, "FIBTG", "fiber", " g");
           printNutrients(response.totalNutrients, "SUGAR", "sugar", " g");
+          //renders pie chart
           makeChart();
         } else {
+          //wites "not available" on page in place of nutrition details
           infoNotAvailable();
         }
       };
@@ -550,7 +599,7 @@ $("#random-btn").on("click", function() {
 
     makeCorsRequest();
 
-    // Empty the contents of the artist-div, append the new artist content
+    //Writes recipe title, directions, and image to the page
 
     $("#title").text(title);
     $("#directions").text(directions);

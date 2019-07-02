@@ -19,7 +19,7 @@ This app includes the following functionalities:
 *On click, calls the MealDB API to return information for a randomly selected recipe from within the results
 *Writes Recipe info (title, ingredients, directions, and image) to the web page
 *Submits recipe ingredients as a JSON object to the Edamam API
-*Writes nutrition details to the web page
+*Takes nutrition info from the API response and writes to the web page
 *Takes nutrition info from the API response to create a pie chart of the macro distribution for the recipe using chart.js
 
 ##Credits
