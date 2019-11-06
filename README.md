@@ -1,7 +1,6 @@
 # project-1: Recipe Generator
 
-Web application for viewing one random recipe at a time (can be limited by category or ingredient) along with nutritional content
-https://andreain3d.github.io/project-1/
+Web application for viewing one random recipe at a time (can be limited by category or ingredient) along with nutritional content.  You can find this project deployed [here.](https://andreain3d.github.io/project-1/)
 
 ## Technologies Used
 * HTML 5  
@@ -23,6 +22,6 @@ This app includes the following functionalities:
 * Takes nutrition info from the API response to create a pie chart of the macro distribution for the recipe using chart.js  
 
 ## Credits
-Code by Andrea Nicholson, Sarah Werner, Brigit Williams, and Michael Simmons
-Edamam Nutrition Analysis API: https://developer.edamam.com/edamam-nutrition-api
-MealDB API: https://www.themealdb.com/api.php
+Code by Andrea Nicholson, Sarah Werner, Brigit Williams, and Michael Simmons  
+[Edamam Nutrition Analysis API](https://developer.edamam.com/edamam-nutrition-api)  
+[MealDB API](https://www.themealdb.com/api.php)  
